@@ -1,0 +1,73 @@
+version: 2
+updates:
+  # GitHub Actions 自身
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    reviewers: ["Nico-lei"]
+    labels: ["deps", "ci"]
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Gradle 依赖（根 + 子模块）
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 10
+    reviewers: ["Nico-lei"]
+    labels: ["deps", "backend"]
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    ignore:
+      # Spring Boot 大版本由架构组手动升级
+      - dependency-name: "org.springframework.boot:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.springframework.cloud:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.alibaba.cloud:*"
+        update-types: ["version-update:semver-major"]
+
+  # 前端 Monorepo（pnpm workspace）
+  - package-ecosystem: "npm"
+    directory: "/bdc-frontend"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 10
+    reviewers: ["Nico-lei"]
+    labels: ["deps", "frontend"]
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    ignore:
+      - dependency-name: "vue"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "element-plus"
+        update-types: ["version-update:semver-major"]
+
+  # Docker 基础镜像（base / 各服务 Dockerfile）
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    reviewers: ["Nico-lei"]
+    labels: ["deps", "docker"]

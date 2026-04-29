@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全漏洞 / 隐私事件（不要在公开 Issue 提）
+    url: mailto:security@bdc.edu.cn
+    about: 等保三级合规要求安全事件单独通道，请发邮件而非提 Issue。
+  - name: 项目设计 / 架构问题
+    url: https://github.com/Nico-lei/bdc-platform/blob/main/docs/README.md
+    about: 先阅读 docs/ 设计文档；如需澄清请使用 “任务（Task）” 模板。

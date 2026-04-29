@@ -1,0 +1,102 @@
+# =====================================================================
+# CODEOWNERS · bdc-platform
+# 文档参考：docs/10-项目管理/01-WBS与开发排期.md § 5（人员负责矩阵）
+#          docs/08-开发规范/02-Git与CI-CD规范.md § 1（必检：≥1 reviewer）
+#
+# 说明：
+#   - GitHub 会按"最后一条匹配规则"决定 owner（自上而下扫描，越靠后优先级越高）。
+#   - 当前为 P0 启动期，团队尚未到齐：除架构师 @Nico-lei 兑底外，
+#     其他岗位先用占位 @Nico-lei；待 P0.1.4 全员账号开通后，按下表逐项替换。
+#
+# 替换指引（P0.1.4 完成后改写）：
+#   架构师            @Nico-lei
+#   后端 A（采集/推送） @<gh-handle>
+#   后端 B（治理/调度/血缘） @<gh-handle>
+#   后端 C（元数据/集市/审批） @<gh-handle>
+#   后端 D（数据服务/MDM/指标/标签） @<gh-handle>
+#   数仓 A             @<gh-handle>
+#   数仓 B             @<gh-handle>
+#   前端 A             @<gh-handle>
+#   前端 B             @<gh-handle>
+#   测试               @<gh-handle>
+#   运维 / 安全顾问    @<gh-handle>
+# =====================================================================
+
+# ---- 兑底规则：所有未明确归属的文件由架构师审 ----
+*                                       @Nico-lei
+
+# ---- 顶层与协作配置（架构师把关） ----
+/.github/                               @Nico-lei
+/.gitignore                             @Nico-lei
+/.gitattributes                         @Nico-lei
+/.editorconfig                          @Nico-lei
+/LICENSE                                @Nico-lei
+/README.md                              @Nico-lei
+/settings.gradle.kts                    @Nico-lei
+/build.gradle.kts                       @Nico-lei
+/gradle.properties                      @Nico-lei
+/buildSrc/                              @Nico-lei
+
+# ---- 文档（doc 类变更允许架构师 +1，重大设计变更需 2 人） ----
+/docs/                                  @Nico-lei
+/docs/06-安全与合规/                    @Nico-lei
+/docs/01-总体架构/                      @Nico-lei
+
+# ---- 二方库（基础库属架构层，统一架构师审） ----
+/bdc-bom/                               @Nico-lei
+/bdc-common/                            @Nico-lei
+/bdc-common/security/                   @Nico-lei
+/bdc-common/crypto/                     @Nico-lei
+/bdc-common/audit/                      @Nico-lei
+
+# ---- 网关（属平台基础） ----
+/bdc-gateway/                           @Nico-lei
+
+# ---- 业务服务（按 WBS § 5 负责人矩阵；当前 P0 由 @Nico-lei 兑底） ----
+# 后端 A：采集 + 推送
+/bdc-services/collect/                  @Nico-lei
+/bdc-services/push/                     @Nico-lei
+
+# 后端 B：治理 + 调度适配 + 血缘
+/bdc-services/govern/                   @Nico-lei
+/bdc-services/scheduler-adapter/        @Nico-lei
+
+# 后端 C：元数据 + 集市 + 审批
+/bdc-services/metadata/                 @Nico-lei
+/bdc-services/market/                   @Nico-lei
+/bdc-services/approval/                 @Nico-lei
+/bdc-services/notify/                   @Nico-lei
+/bdc-services/file/                     @Nico-lei
+
+# 后端 D：数据服务 + MDM + 指标 + 标签
+/bdc-services/service-api/              @Nico-lei
+/bdc-services/mdm/                      @Nico-lei
+/bdc-services/indicator/                @Nico-lei
+/bdc-services/tag/                      @Nico-lei
+
+# 平台服务：认证 + 权限 + 仓库
+/bdc-services/auth/                     @Nico-lei
+/bdc-services/uac/                      @Nico-lei
+/bdc-services/warehouse/                @Nico-lei
+
+# 安全 / 审计：高危区，强制架构师审（建议后续补 2 人评审规则）
+/bdc-services/security/                 @Nico-lei
+/bdc-services/audit/                    @Nico-lei
+
+# ---- 数据计算 ----
+/bdc-flink-jobs/                        @Nico-lei
+/bdc-datax-plugins/                     @Nico-lei
+
+# ---- 前端 ----
+/bdc-frontend/                          @Nico-lei
+/bdc-frontend/portal/                   @Nico-lei
+/bdc-frontend/admin/                    @Nico-lei
+/bdc-frontend/screen/                   @Nico-lei
+/bdc-frontend/market/                   @Nico-lei
+/bdc-frontend/designer/                 @Nico-lei
+
+# ---- 部署 / 运维（高危：DBA + 架构师 双签） ----
+/bdc-deploy/                            @Nico-lei
+/bdc-deploy/sql/                        @Nico-lei
+/bdc-deploy/prod/                       @Nico-lei
+/bdc-deploy/scripts/                    @Nico-lei

@@ -1,0 +1,23 @@
+title = "bdc-platform · gitleaks 配置"
+
+# 使用 gitleaks 默认规则集
+[extend]
+useDefault = true
+
+# 全局忽略：占位 / 文档示例 / 测试用密钥
+[allowlist]
+description = "bdc-platform 全局白名单"
+paths = [
+  '''(^|/)docs/''',                 # 设计文档允许出现示例 token
+  '''(^|/)\.github/''',             # 模板文件
+  '''(^|/)bdc-deploy/dev/''',       # dev 环境占位脚本可有 demo 密钥
+  '''(^|/)\.gitleaks\.toml$''',
+  '''(^|/)README\.md$''',
+]
+regexes = [
+  '''ENC\([A-Za-z0-9+/=]+\)''',                  # Nacos 密文，启动时由 KMS 解密
+  '''\$\{[A-Z_]+\}''',                            # 环境变量占位 ${DB_PASSWORD}
+  '''(?i)(example|sample|placeholder|dummy|test).{0,30}(token|secret|key|password)''',
+  '''xxxx-xxxx-xxxx-xxxx''',
+]
+commits = []
