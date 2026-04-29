@@ -1,0 +1,30 @@
+{
+  "name": "bdc-frontend",
+  "private": true,
+  "version": "1.0.0-SNAPSHOT",
+  "description": "高校数据中台前端 Monorepo（pnpm workspace）",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev:portal":    "pnpm --filter portal dev",
+    "dev:admin":     "pnpm --filter admin dev",
+    "dev:screen":    "pnpm --filter screen dev",
+    "dev:market":    "pnpm --filter market dev",
+    "dev:designer":  "pnpm --filter designer dev",
+    "build":         "pnpm -r --parallel build",
+    "lint":          "pnpm -r --parallel lint",
+    "test":          "pnpm -r --parallel test",
+    "clean":         "pnpm -r --parallel exec rimraf node_modules dist"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "vite": "5.2.10",
+    "@vitejs/plugin-vue": "5.0.4",
+    "eslint": "9.0.0",
+    "prettier": "3.2.5",
+    "rimraf": "5.0.5"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

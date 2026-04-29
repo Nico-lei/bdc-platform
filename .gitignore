@@ -1,0 +1,111 @@
+# ===== Java / Gradle =====
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Maven (兜底，本仓主用 Gradle)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# ===== IDE =====
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+*.code-workspace
+.project
+.classpath
+.settings/
+.factorypath
+
+# ===== Frontend =====
+node_modules/
+.pnpm-store/
+dist/
+dist-ssr/
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+.vite/
+*.tsbuildinfo
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.swp
+*.swo
+*~
+
+# ===== Logs =====
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Env / Secrets =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+.vault-token
+
+# ===== Docker / Compose =====
+*.tar
+.docker/
+
+# ===== Test / Coverage =====
+coverage/
+.nyc_output/
+*.lcov
+jacoco.exec
+*.exec
+
+# ===== Tooling =====
+.flyway/
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# ===== Generated =====
+generated/
+generated-sources/
+generated-test-sources/
+**/openapi-generated/
+
+# ===== bdc-* 项目特定 =====
+# 本地数据卷 / 大文件
+bdc-deploy/**/data/
+bdc-deploy/**/volumes/
+bdc-deploy/**/.env.local
+bdc-deploy/**/secrets/
+*.dump
+*.sql.gz

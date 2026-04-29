@@ -1,0 +1,47 @@
+# 统一行尾，避免 Windows / Linux 协作产生伪 diff
+* text=auto eol=lf
+
+# 二进制文件
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.zip  binary
+*.tar  binary
+*.gz   binary
+*.jar  binary
+*.war  binary
+*.class binary
+*.p12  binary
+*.jks  binary
+*.keystore binary
+
+# 强制 LF 的脚本类
+*.sh   text eol=lf
+*.bash text eol=lf
+*.kts  text eol=lf
+*.gradle text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.java text eol=lf
+*.ts   text eol=lf
+*.js   text eol=lf
+*.vue  text eol=lf
+*.sql  text eol=lf
+
+# Windows 批处理 / PowerShell 保留 CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# 标记设计文档为 linguist-documentation，避免在 GitHub 语言占比里"虚高"
+docs/**       linguist-documentation
+**/README.md  linguist-documentation

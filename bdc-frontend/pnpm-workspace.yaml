@@ -1,0 +1,7 @@
+packages:
+  - "portal"
+  - "admin"
+  - "screen"
+  - "market"
+  - "designer"
+  - "shared/*"
