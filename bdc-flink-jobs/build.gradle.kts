@@ -25,5 +25,5 @@ dependencies {
     // implementation("com.ververica:flink-cdc-pipeline-connector-postgres:${project.findProperty("flinkCdcVersion")}")
     // implementation("org.apache.flink:flink-connector-kafka:${project.findProperty("flinkVersion")}")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
 }

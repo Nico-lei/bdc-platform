@@ -21,5 +21,5 @@ dependencies {
     // compileOnly("com.alibaba.datax:datax-core:0.0.1-SNAPSHOT")
     // implementation(project(":bdc-common:crypto"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
 }
