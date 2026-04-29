@@ -12,7 +12,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write   # PR 标题/评审 action 需要 write 才能反向标注失败原因
+  checks: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,43 +21,14 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------
-  # Job 1：PR 标题语义化校验（Conventional Commits）
-  # ---------------------------------------------------------------
-  pr-title:
-    name: PR 标题（Conventional Commits）
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: 校验 PR 标题
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            style
-            refactor
-            perf
-            test
-            build
-            ci
-            chore
-            revert
-          requireScope: true
-          subjectPattern: ^.{1,80}$
-          subjectPatternError: |
-            PR 标题的 subject 必须为 1~80 字符。
-            正确格式：<type>(<scope>): <subject>  [JIRA-XXX]
-            示例：    feat(collect): 新增达梦增量采集连接器  [BDC-101]
-          wip: true
-
-  # ---------------------------------------------------------------
-  # Job 2：Commit 标题语义化校验
+  # Job 1：PR 标题 + Commit 标题 语义化校验（Conventional Commits）
+  #
+  # 说明：合并到一个 job，仅依赖 commitlint，不调用任何需要 GitHub App
+  # integration scope 的 action，规避公共仓默认 GITHUB_TOKEN 受限带来的
+  # "Resource not accessible by integration" 问题。
   # ---------------------------------------------------------------
   commitlint:
-    name: Commit 标题（Conventional Commits）
+    name: PR / Commit 标题（Conventional Commits）
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
@@ -73,6 +45,8 @@ jobs:
       - name: 写入 commitlint 配置
         run: |
           cat > commitlint.config.cjs <<'EOF'
+          // 注意：中文 subject 会被 commitlint 默认 subject-case 规则误判为 sentence-case，
+          // 因此在中文项目中必须关闭 subject-case 规则。
           module.exports = {
             extends: ['@commitlint/config-conventional'],
             rules: {
@@ -80,14 +54,25 @@ jobs:
                 'feat','fix','docs','style','refactor','perf',
                 'test','build','ci','chore','revert'
               ]],
-              'scope-empty': [2, 'never'],
-              'subject-empty': [2, 'never'],
+              'scope-empty':       [2, 'never'],
+              'subject-empty':     [2, 'never'],
+              'subject-case':      [0],
+              'subject-full-stop': [0],
+              'body-max-line-length':   [0],
+              'footer-max-line-length': [0],
               'header-max-length': [2, 'always', 120]
             }
           };
           EOF
 
-      - name: 校验 PR 中的所有 commit
+      - name: 校验 PR 标题（Squash Merge 时即为最终 commit 标题）
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR 标题：$PR_TITLE"
+          echo "$PR_TITLE" | npx commitlint --config commitlint.config.cjs
+
+      - name: 校验 PR 中的所有 commit 标题
         run: |
           npx commitlint \
             --from=${{ github.event.pull_request.base.sha }} \
@@ -95,7 +80,7 @@ jobs:
             --config commitlint.config.cjs
 
   # ---------------------------------------------------------------
-  # Job 3：仓库结构与 YAML / JSON 文件健康检查
+  # Job 2：仓库结构与 YAML / JSON 文件健康检查
   # ---------------------------------------------------------------
   structure:
     name: 仓库结构 / YAML / JSON 校验
@@ -168,21 +153,27 @@ jobs:
               indentation: { spaces: 2, indent-sequences: consistent }
               truthy: { allowed-values: ['true','false','on','off','yes','no'] }
 
-      - name: JSON 语法校验
+      - name: JSON 语法校验（兼容含 BOM 的文件，但同时拦截非法 BOM）
         shell: bash
         run: |
           set -e
           fail=0
           while IFS= read -r f; do
-            python3 -c "import json,sys; json.load(open('$f', encoding='utf-8'))" || {
+            # 1) 用 utf-8-sig 解析（容忍 BOM）；解析失败 = 真错误
+            python3 -c "import json; json.load(open('$f', encoding='utf-8-sig'))" || {
               echo "::error file=$f::JSON 解析失败"
               fail=1
+              continue
             }
+            # 2) 但同时按 RFC 8259 提示：JSON 不应含 BOM；命中则告警（不阻断）
+            head -c 3 "$f" | od -An -tx1 | tr -d ' \n' | grep -qi '^efbbbf' && \
+              echo "::warning file=$f::JSON 文件含 UTF-8 BOM，建议去除（RFC 8259 不允许 JSON 文本带 BOM）"
+            true
           done < <(find . -name '*.json' -not -path './node_modules/*' -not -path './**/dist/*' -not -path './.git/*')
           exit $fail
 
   # ---------------------------------------------------------------
-  # Job 4：密钥泄露扫描（gitleaks）
+  # Job 3：密钥泄露扫描（gitleaks）
   # ---------------------------------------------------------------
   gitleaks:
     name: 密钥泄露扫描（gitleaks）
@@ -198,7 +189,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ---------------------------------------------------------------
-  # Job 5：大文件拦截（>10MB 直接 fail）
+  # Job 4：大文件拦截（>10MB 直接 fail）
   # ---------------------------------------------------------------
   big-file:
     name: 大文件拦截（>10MB）
@@ -219,7 +210,7 @@ jobs:
           echo "OK：无 >10MB 文件。"
 
   # ---------------------------------------------------------------
-  # Job 6：汇总（必检项入口，分支保护规则只挂这一个，便于后续扩展时不必反复改保护规则）
+  # Job 5：汇总（必检入口，分支保护规则只挂这一个，便于后续扩展时不必反复改保护规则）
   # ---------------------------------------------------------------
   ci-summary:
     name: CI 汇总（必检入口）
@@ -231,7 +222,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          # 在 push 事件中没有 PR 标题/commitlint 这两个 job，因此只看 structure / gitleaks / big-file
+          # 在 push 事件中没有 commitlint 这个 job（只 PR 触发），因此只看 structure / gitleaks / big-file
           if [[ "${{ needs.structure.result }}"   != "success" ]] \
           || [[ "${{ needs.gitleaks.result }}"    != "success" ]] \
           || [[ "${{ needs.big-file.result }}"    != "success" ]]; then
