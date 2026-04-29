@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "admin",
   "private": true,
   "version": "1.0.0-SNAPSHOT",
@@ -21,7 +21,7 @@
     "dayjs": "1.11.10"
   },
   "devDependencies": {
-    "typescript": "5.4.5",
+    "typescript": "6.0.3",
     "vue-tsc": "2.0.13",
     "vite": "5.2.10",
     "@vitejs/plugin-vue": "5.0.4",
