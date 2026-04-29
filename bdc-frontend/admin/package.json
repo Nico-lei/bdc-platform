@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "admin",
   "private": true,
   "version": "1.0.0-SNAPSHOT",
@@ -28,7 +28,7 @@
     "vitest": "1.5.2",
     "@vue/test-utils": "2.4.5",
     "eslint": "9.0.0",
-    "eslint-plugin-vue": "9.25.0",
+    "eslint-plugin-vue": "10.9.0",
     "@typescript-eslint/parser": "7.7.0"
   }
 }
