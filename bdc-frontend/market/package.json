@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "market",
   "private": true,
   "version": "1.0.0-SNAPSHOT",
@@ -12,7 +12,7 @@
     "test":    "vitest run"
   },
   "dependencies": {
-    "vue": "3.4.27",
+    "vue": "3.5.33",
     "vue-router": "4.3.0",
     "pinia": "2.1.7",
     "element-plus": "2.7.2",
