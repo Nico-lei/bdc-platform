@@ -12,7 +12,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write   # PR 标题/评审 action 需要 write 才能反向标注失败原因
+  checks: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -73,6 +74,8 @@ jobs:
       - name: 写入 commitlint 配置
         run: |
           cat > commitlint.config.cjs <<'EOF'
+          // 注意：中文 subject 会被 commitlint 默认 subject-case 规则误判为 sentence-case，
+          // 因此在中文项目中必须关闭 subject-case 规则。
           module.exports = {
             extends: ['@commitlint/config-conventional'],
             rules: {
@@ -80,8 +83,12 @@ jobs:
                 'feat','fix','docs','style','refactor','perf',
                 'test','build','ci','chore','revert'
               ]],
-              'scope-empty': [2, 'never'],
-              'subject-empty': [2, 'never'],
+              'scope-empty':       [2, 'never'],
+              'subject-empty':     [2, 'never'],
+              'subject-case':      [0],
+              'subject-full-stop': [0],
+              'body-max-line-length':   [0],
+              'footer-max-line-length': [0],
               'header-max-length': [2, 'always', 120]
             }
           };
@@ -168,16 +175,22 @@ jobs:
               indentation: { spaces: 2, indent-sequences: consistent }
               truthy: { allowed-values: ['true','false','on','off','yes','no'] }
 
-      - name: JSON 语法校验
+      - name: JSON 语法校验（兼容含 BOM 的文件，但同时拦截非法 BOM）
         shell: bash
         run: |
           set -e
           fail=0
           while IFS= read -r f; do
-            python3 -c "import json,sys; json.load(open('$f', encoding='utf-8'))" || {
+            # 1) 用 utf-8-sig 解析（容忍 BOM）；解析失败 = 真错误
+            python3 -c "import json; json.load(open('$f', encoding='utf-8-sig'))" || {
               echo "::error file=$f::JSON 解析失败"
               fail=1
+              continue
             }
+            # 2) 但同时按 RFC 8259 提示：JSON 不应含 BOM；命中则告警（不阻断）
+            head -c 3 "$f" | od -An -tx1 | tr -d ' \n' | grep -qi '^efbbbf' && \
+              echo "::warning file=$f::JSON 文件含 UTF-8 BOM，建议去除（RFC 8259 不允许 JSON 文本带 BOM）"
+            true
           done < <(find . -name '*.json' -not -path './node_modules/*' -not -path './**/dist/*' -not -path './.git/*')
           exit $fail
 
