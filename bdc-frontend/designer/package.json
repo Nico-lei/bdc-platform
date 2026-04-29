@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "designer",
   "private": true,
   "version": "1.0.0-SNAPSHOT",
@@ -18,7 +18,7 @@
     "element-plus": "2.7.2",
     "axios": "1.6.8",
     "echarts": "5.5.0",
-    "dayjs": "1.11.10"
+    "dayjs": "1.11.20"
   },
   "devDependencies": {
     "typescript": "5.4.5",
