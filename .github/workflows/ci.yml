@@ -21,43 +21,14 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------
-  # Job 1：PR 标题语义化校验（Conventional Commits）
-  # ---------------------------------------------------------------
-  pr-title:
-    name: PR 标题（Conventional Commits）
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: 校验 PR 标题
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            style
-            refactor
-            perf
-            test
-            build
-            ci
-            chore
-            revert
-          requireScope: true
-          subjectPattern: ^.{1,80}$
-          subjectPatternError: |
-            PR 标题的 subject 必须为 1~80 字符。
-            正确格式：<type>(<scope>): <subject>  [JIRA-XXX]
-            示例：    feat(collect): 新增达梦增量采集连接器  [BDC-101]
-          wip: true
-
-  # ---------------------------------------------------------------
-  # Job 2：Commit 标题语义化校验
+  # Job 1：PR 标题 + Commit 标题 语义化校验（Conventional Commits）
+  #
+  # 说明：合并到一个 job，仅依赖 commitlint，不调用任何需要 GitHub App
+  # integration scope 的 action，规避公共仓默认 GITHUB_TOKEN 受限带来的
+  # "Resource not accessible by integration" 问题。
   # ---------------------------------------------------------------
   commitlint:
-    name: Commit 标题（Conventional Commits）
+    name: PR / Commit 标题（Conventional Commits）
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
@@ -94,7 +65,14 @@ jobs:
           };
           EOF
 
-      - name: 校验 PR 中的所有 commit
+      - name: 校验 PR 标题（Squash Merge 时即为最终 commit 标题）
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "PR 标题：$PR_TITLE"
+          echo "$PR_TITLE" | npx commitlint --config commitlint.config.cjs
+
+      - name: 校验 PR 中的所有 commit 标题
         run: |
           npx commitlint \
             --from=${{ github.event.pull_request.base.sha }} \
