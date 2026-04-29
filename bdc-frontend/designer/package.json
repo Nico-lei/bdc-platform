@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "designer",
   "private": true,
   "version": "1.0.0-SNAPSHOT",
@@ -24,7 +24,7 @@
     "typescript": "5.4.5",
     "vue-tsc": "2.0.13",
     "vite": "5.2.10",
-    "@vitejs/plugin-vue": "5.0.4",
+    "@vitejs/plugin-vue": "6.0.6",
     "vitest": "1.5.2",
     "@vue/test-utils": "2.4.5",
     "eslint": "9.0.0",
