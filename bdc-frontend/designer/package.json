@@ -29,6 +29,6 @@
     "@vue/test-utils": "2.4.5",
     "eslint": "9.0.0",
     "eslint-plugin-vue": "9.25.0",
-    "@typescript-eslint/parser": "7.7.0"
+    "@typescript-eslint/parser": "8.59.2"
   }
 }
